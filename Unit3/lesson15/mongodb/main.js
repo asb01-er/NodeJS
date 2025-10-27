@@ -6,6 +6,8 @@ const homeController = require("./controllers/homeController");
 const errorController = require("./controllers/errorController");
 const layouts = require("express-ejs-layouts");
 const Subscriber = require("./models/subscriber");
+const subscribersController = require("./controllers/subscribersController");
+
 
 const mongoose = require("mongoose");
 
@@ -22,7 +24,7 @@ db.once("open", () => {
 
 const subscriber1 = new Subscriber({
   name: "Ernest Ekelem",
-  email: "jon@jonwexler.com"
+  email: "ernest@ekelem.com"
 });
 
 subscriber1
@@ -36,7 +38,7 @@ subscriber1
 
 Subscriber.create({
   name: "Ernest Ekelem",
-  email: "jon@jonwexler.com"
+  email: "ernest@ekelem.com"
 })
   .then(savedDocument => {
     console.log("Created subscriber:", savedDocument);
@@ -62,11 +64,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/items/:vegetable", homeController.sendReqParam);
+app.get("/subscribers", subscribersController.getAllSubscribers,
+  (req, res, next) => {
+    console.log(req.data);
+    res.send(req.data);
+});
 
-app.post("/", homeController.sendPost);
+app.get("/contact", subscribersController.getSubscriptionPage);
 
-app.get("/name/:myName", homeController.respondWithName);
+app.post("/subscribe", subscribersController.saveSubscriber);
 
 //error handling middleware
 // app.use(errorController.logErrors);
