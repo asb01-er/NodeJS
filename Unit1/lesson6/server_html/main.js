@@ -1,136 +1,53 @@
+"use strict";
+
+// Set the port number for the server
 const port = 3000;
-const http = require("http");
-const httpStatus = require("http-status-codes");
-const fs = require("fs");
 
-// ex1
-// const routeMap = {
-//     "/":"views/index.html"
-// };
+// Import required modules
+const http = require("http"); // Core Node.js module to create servers
+const httpStatusCodes = require("http-status-codes"); // Provides readable HTTP status codes
+const fs = require("fs"); // File system module to read files
+const router = require("./router"); // Custom router module to handle routes
 
-// ex2
-// const getViewUrl = (url) => {
-// return `views${url}.html`;
-// };
+// Define content types for responses
+const plainTextContentType = {
+  "Content-Type": "text/plain" // Used for plain text responses
+};
 
-// example1
+const htmlContentType = {
+  "Content-Type": "text/html" // Used for HTML responses
+};
 
-// http.createServer((req, res) => {
-//     res.writeHead(httpStatus.OK, {
-//         "Content_type" : "text/html"
-//     });
+// Custom function to read and serve a file
+const customReadFile = (file, res) => {
+  fs.readFile(`./${file}`, (errors, data) => {
+    if (errors) {
+      console.log("Error reading the file..."); // Log if file read fails
+    }
+    res.end(data); // Send file content as response
+  });
+};
 
-//     if (routeMap[req.url]) {
-//         fs.readFile(routeMap[req.url], (error, data) => {
-//             res.write(data);
-//             res.end();
-//         });
-//     } else {
-//         res.end("<h1>Sorry, not found.</h1>");
-//     }
-// })
-
-// example2
-
-// http.createServer((req, res) => {
-//     let viewUrl = getViewUrl(req.url);
-//     fs.readFile(viewUrl, (error, data) => {
-//         if (error) {
-//             res.writeHead(httpStatus.NOT_FOUND);
-//             res.write("<h1>FILE NOT FOUND</h1>");
-//         } else {
-//             res.writeHead(httpStatus.OK, {
-//                 "Content-Type" : "text/html"
-//             });
-//             res.write(data);
-//         }
-//         res.end();
-//     })
-// })
-
-
-
-// const sendErrorResponse = res => {
-//     res.writeHead(httpStatus.NOT_FOUND, {
-//         "Content-Type": "text/html"
-//     });
-//     res.write("<h1>File Not Found!</h1>");
-//     res.end();
-// };
-
-// http.createServer((req, res) => {
-//     let url = req.url;
-//     if (url.indexOf("html") !== -1) {
-//         res.writeHead(httpStatus.OK, {
-//             "Content-Type": "text/html"
-//         });
-//         customReadFile(`./views${url}`, res);
-//     } else if (url.indexOf(".js") !== -1) {
-//         res.writeHead(httpStatus.OK, {
-//             "Content-Type": "text/javascript"
-//         });
-//         customReadFile(`./public/js${url}`, res);
-//     } else if (url.indexOf(".css") !== -1) {
-//         res.writeHead(httpStatus.OK, {
-//             "Content-Type": "text/css"
-//         });
-//         customReadFile(`./public/css${url}`, res);
-//     } else if (url.indexOf("png") !== -1) {
-//         res.writeHead(httpStatus.OK, {
-//             "Content-Type": "image/png"
-//         });
-//         customReadFile(`./public/image${url}`, res);
-//     } else {
-//         sendErrorResponse(res);
-//     }
-// })
-
-//     .listen(port);
-// console.log(`The server has started and is listening on port number: ${port}`);
-
-// const customReadFile = (file_path, res) => {
-//     if (fs.existsSync(file_path)) {
-//         fs.readFile(file_path, (error, data) => {
-//             if (error) {
-//                 console.log(error);
-//                 sendErrorResponse(res);
-//                 return;
-//             }
-//             res.write(data);
-//             res.end();
-//         });
-//     } else {
-//         sendErrorResponse(res);
-//     }
-// };
-httpStatusCodes = require("http-status-codes"),
-router = require("./router"),
-
-plainTextContentType = {
-    "Content-Type": "text/plain"
-},
-    htmlContentType = {
-        "Content-Type": "text/html"
-    },
-    customReadFile = (file, res) => {
-        fs.readFile(`./${file}`, (errors, data) => {
-            if (errors) {
-                console.log("Error reading the file...");
-            }
-            res.end(data);
-        });
-    };
+// Handle GET request to root URL "/"
 router.get("/", (req, res) => {
-    res.writeHead(httpStatusCodes.OK, plainTextContentType);
-    res.end("INDEX");
+  res.writeHead(httpStatusCodes.OK, plainTextContentType); // Set status and content type
+  res.end("INDEX"); // Send plain text response
 });
+
+// Handle GET request to "/index.html"
 router.get("/index.html", (req, res) => {
-    res.writeHead(httpStatusCodes.OK, htmlContentType);
-    customReadFile("views/index.html", res);
+  res.writeHead(httpStatusCodes.OK, htmlContentType); // Set status and content type
+  customReadFile("views/index.html", res); // Serve the HTML file
 });
+
+// Handle POST request to root URL "/"
 router.post("/", (req, res) => {
-    res.writeHead(httpStatusCodes.OK, plainTextContentType);
-    res.end("POSTED");
+  res.writeHead(httpStatusCodes.OK, plainTextContentType); // Set status and content type
+  res.end("POSTED"); // Send confirmation message
 });
-http.createServer(router.handle).listen(3000);
-console.log(`The server is listening on port number:${port}`);
+
+// Create and start the server using the router's handle method
+http.createServer(router.handle).listen(port);
+
+// Log a message to confirm the server is running
+console.log(`The server is listening on port number: ${port}`);
