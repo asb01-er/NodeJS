@@ -1,6 +1,8 @@
 "use strict";
 
 const User = require("../models/user");
+const { body, validationResult } = require("express-validator");
+const passport = require("passport");
 
 const getUserParams = (body) => {
   return {
@@ -13,8 +15,6 @@ const getUserParams = (body) => {
     zipCode: body.zipCode,
   };
 };
-const passport = require("passport")
-
 
 module.exports = {
   index: (req, res, next) => {
@@ -29,25 +29,32 @@ module.exports = {
       });
   },
   indexView: (req, res) => {
-    res.render("users/index", {
-      flashMessages: {
-        success: "Loaded all users!",
-      },
-    });
+    // res.render("users/index");
+    if (req.query.format === "json") {
+      res.json(res.locals.courses);
+    } else {
+      res.render("courses/index");
+    }
   },
   new: (req, res) => {
     res.render("users/new");
   },
   create: (req, res, next) => {
-    if (req.skip) return next();
+    if (req.skip) next();
     let newUser = new User(getUserParams(req.body));
     User.register(newUser, req.body.password, (error, user) => {
       if (user) {
-        req.flash("success", `${user.fullName}'s account created successfully!`);
+        req.flash(
+          "success",
+          `${user.fullName}'s account created successfully!`
+        );
         res.locals.redirect = "/users";
         next();
       } else {
-        req.flash("error", `Failed to create user account because:${error.message}.`);
+        req.flash(
+          "error",
+          `Failed to create user account because: ${error.message}.`
+        );
         res.locals.redirect = "/users/new";
         next();
       }
@@ -125,41 +132,52 @@ module.exports = {
   login: (req, res) => {
     res.render("users/login");
   },
-  logout: (req, res, next) => {
-    req.logout();
-    req.flash("success", "You have been logged out!");
-    res.locals.redirect = "/";
-    next();
-  },
-
   authenticate: passport.authenticate("local", {
     failureRedirect: "/users/login",
     failureFlash: "Failed to login.",
     successRedirect: "/",
-    successFlash: "Logged in!"
+    successFlash: "Logged in!",
   }),
+  validate: [
+    body("email")
+      .normalizeEmail({
+        all_lowercase: true,
+      })
+      .trim()
+      .isEmail()
+      .withMessage("Email is invalid"),
 
-  validate: (req, res, next) => {
-    req.sanitizeBody("email").normalizeEmail({
-      all_lowercase: true
-    }).trim();
-    req.check("email", "Email is invalid").isEmail();
-    req.check("zipCode", "Zip code is invalid")
-      .notEmpty().isInt().isLength({
+    body("zipCode")
+      .notEmpty()
+      .isInt()
+      .isLength({
         min: 5,
-        max: 5
-      }).equals(req.body.zipCode);
-    req.check("password", "Password cannot be empty").notEmpty();
-    req.getValidationResult().then((error) => {
-      if (!error.isEmpty()) {
-        let messages = error.array().map(e => e.msg);
-        req.skip = true;
+        max: 5,
+      })
+      .withMessage("Zip code is invalid"),
+
+    body("password").notEmpty().withMessage("Password cannot be empty"),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        let messages = errors.array().map((e) => e.msg);
         req.flash("error", messages.join(" and "));
         res.locals.redirect = "/users/new";
         next();
       } else {
         next();
       }
+    },
+  ],
+  logout: (req, res, next) => {
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      req.flash("success", "You have been logged out!");
+      res.locals.redirect = "/";
+      next();
     });
-  }
-}
+  },
+};

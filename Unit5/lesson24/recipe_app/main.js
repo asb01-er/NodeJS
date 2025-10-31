@@ -20,6 +20,7 @@ const { body, validationResult } = require('express-validator');
 
 const passport = require("passport");
 const User = require("./models/user");
+const bcrypt = require('bcrypt');
 
 mongoose.Promise = global.Promise;
 
@@ -89,6 +90,8 @@ router.get("/contact", homeController.getSubscriptionPage);
 router.get("/users/login", usersController.login);
 router.post("/users/login", usersController.authenticate,
   usersController.redirectView);
+router.get("/users/logout", usersController.logout, usersController.redirect-
+View)
 
 //USERS
 router.get("/users", usersController.index, usersController.indexView);
