@@ -6,7 +6,7 @@ const contentTypes = require("./contentTypes");
 const utils = require("./utils");
 
 router.get("/", (req, res) => {
-    res.writeHead(httpStatus.OK, contentTypes.htm);
+    res.writeHead(httpStatus.OK, contentTypes.html);
     utils.getFile("views/index.html", res);
 });
 
