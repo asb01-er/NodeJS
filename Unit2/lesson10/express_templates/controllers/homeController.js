@@ -6,7 +6,7 @@ exports.respondWithName = (req, res) => {
 };
 
 
-// exports.respondWithName = (res, res) => {
+// exports.respondWithName = (req, res) => {
 //     const name = req.params.myName;
 //     res.send(`Hello, ${name}!`);
 // };
