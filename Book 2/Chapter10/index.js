@@ -10,8 +10,7 @@ mongoose.connect('mongodb://localhost/my_database', {
   useNewUrlParser:
     true
 })
-// ======================================================
-// chap 9
+// ======================================================s
 // Controllers
 const newPostController = require('./controllers/newPost')
 const aboutController = require('./controllers/about')
@@ -19,6 +18,11 @@ const contactController = require('./controllers/contact')
 const homeController = require('./controllers/home')
 const storePostController = require('./controllers/storePost')
 const getPostController = require('./controllers/getPost')
+const newUserController = require('./controllers/newUser')
+const storeUserController = require('./controllers/storeUser')
+const loginController = require('./controllers/login');
+const loginUserController = require('./controllers/loginUser');
+
 // Middleware
 const validateMiddleware = require("./middleware/validateMiddleware");
 
@@ -46,18 +50,12 @@ app.get("/contact", contactController);
 app.get('/posts/new',newPostController)
 app.get('/post/:id', getPostController);
 app.post("/posts/store", storePostController);
+app.get('/auth/register', newUserController);
+app.post('/users/register', storeUserController);
+app.get('/auth/login', loginController);
+app.post('/users/login', loginUserController)
 
-// app.post('/posts/store', (req, res) => {
-//   // model creates a new doc with browser data
-//   let image = req.files.image;
-//   image.mv(path.resolve(__dirname, '/public/assets/img', image.name), async (error) => {
-//     await BlogPost.create({
-//       ...req.body,
-//       image: 'public/assets/img/' + image.name
-//     })
-//     res.redirect('/')
-//     });
-//   });
+
 
 
 
