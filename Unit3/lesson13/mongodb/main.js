@@ -6,20 +6,22 @@ const homeController = require("./controllers/homeController");
 const errorController = require("./controllers/errorController");
 const layouts = require("express-ejs-layouts");
 
+// Require MongoDB client
 const MongoDB = require("mongodb").MongoClient;
-const dbURL = "mongo://localhost:27017";
-const dbName = "recipe_db";
+const dbURL = "mongodb://localhost:27017"; // default local MongoDB server
+const dbName = "recipe_db"; // database name
 
+// Connect to MongoDB server
 MongoDB.connect(dbURL, (error, client) => {
   if (error) throw error;
-  let db = client.db(dbName);
-  db.collection("contacts")
+  let db = client.db(dbName); // Get database instance
+  db.collection("contacts") // Query all documents in 'contacts' collection
   .insert({
     name: "Ernest Ekelem",
     email: "ernest@gmail.com"
   }, (error, db) => {
     if (error) throw error;
-    console.log(db);
+    console.log(db); // Print results to console
   });
 
   db.collection("contacts")

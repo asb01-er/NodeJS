@@ -7,8 +7,9 @@ const errorController = require("./controllers/errorController");
 const layouts = require("express-ejs-layouts");
 const Subscriber = require("./models/subscriber");
 
+// Require Mongoose
 const mongoose = require("mongoose");
-
+// Connect to MongoDB using Mongoose
 mongoose.connect(
   "mongodb://localhost:27017/recipe_db",
   { useNewUrlParser: true }
@@ -33,7 +34,7 @@ subscriber1
   .catch(error => {
     console.error("Error saving subscriber:", error);
   });
-
+// Create and save a new subscriber
 Subscriber.create({
   name: "Ernest Ekelem",
   email: "jon@jonwexler.com"
