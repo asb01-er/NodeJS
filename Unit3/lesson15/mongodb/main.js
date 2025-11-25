@@ -1,57 +1,39 @@
 "use strict";
 
+// -------------------- APP SETUP -------------------- //
 const express = require("express");
 const app = express();
+
+const layouts = require("express-ejs-layouts");
+
+// Import controllers
 const homeController = require("./controllers/homeController");
 const errorController = require("./controllers/errorController");
-const layouts = require("express-ejs-layouts");
-const Subscriber = require("./models/subscriber");
 const subscribersController = require("./controllers/subscribersController");
 
-
+// Import Mongoose and model
 const mongoose = require("mongoose");
+const Subscriber = require("./models/subscriber");
 
-mongoose.connect(
-  "mongodb://localhost:27017/recipe_db",
-  { useNewUrlParser: true }
-);
+// -------------------- DATABASE CONNECTION -------------------- //
+// Connect to local MongoDB database named "recipe_db"
+mongoose.connect("mongodb://localhost:27017/recipe_db", {
+  useNewUrlParser: true
+});
 
-const db = mongoose.connection;
-
-db.once("open", () => {
+// Log successful connection
+mongoose.connection.once("open", () => {
   console.log("Successfully connected to MongoDB");
 });
 
-const subscriber1 = new Subscriber({
-  name: "Ernest Ekelem",
-  email: "ernest@ekelem.com"
-});
+// -------------------- SERVER CONFIGURATION -------------------- //
+app.set("port", process.env.PORT || 3000); // Default port is 3000
+app.set("view engine", "ejs"); // Use EJS template engine
 
-subscriber1
-  .save()
-  .then(savedDocument => {
-    console.log("Saved subscriber:", savedDocument);
-  })
-  .catch(error => {
-    console.error("Error saving subscriber:", error);
-  });
-
-Subscriber.create({
-  name: "Ernest Ekelem",
-  email: "ernest@ekelem.com"
-})
-  .then(savedDocument => {
-    console.log("Created subscriber:", savedDocument);
-  })
-  .catch(error => {
-    console.error("Error creating subscriber:", error);
-  });
-
-
-app.set("port", process.env.PORT || 3000);
-app.set("view engine", "ejs");
-
+// EJS Layout middleware
 app.use(layouts);
+
+// Handle form submissions and JSON
 app.use(
   express.urlencoded({
     extended: false
@@ -59,27 +41,38 @@ app.use(
 );
 app.use(express.json());
 
+// Log every request for debugging
 app.use((req, res, next) => {
-  console.log(`request made to: ${req.url}`);
+  console.log(`Request made to: ${req.url}`);
   next();
 });
 
-app.get("/subscribers", subscribersController.getAllSubscribers,
-  (req, res, next) => {
-    console.log(req.data);
-    res.send(req.data);
-});
+// -------------------- ROUTES -------------------- //
 
+// Fetch all subscribers (browser route + send data as fallback)
+app.get(
+  "/subscribers",
+  subscribersController.getAllSubscribers,
+  (req, res, next) => {
+    console.log(req.data); // Show fetched data in console
+    res.send(req.data); // Optional API response
+  }
+);
+
+// Subscription form page
 app.get("/contact", subscribersController.getSubscriptionPage);
 
+// Handle new subscription form submission
 app.post("/subscribe", subscribersController.saveSubscriber);
 
-//error handling middleware
-// app.use(errorController.logErrors);
+// -------------------- ERROR HANDLING -------------------- //
+// Custom 404 page (resource not found)
 app.use(errorController.respondNoResourceFound);
+
+// Custom 500 error handler (server crash)
 app.use(errorController.respondInternalError);
 
+// -------------------- START SERVER -------------------- //
 app.listen(app.get("port"), () => {
   console.log(`Server running at http://localhost:${app.get("port")}`);
 });
-

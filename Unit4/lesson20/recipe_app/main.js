@@ -11,7 +11,7 @@ const subscribersController = require("./controllers/subscribersController");
 const usersController = require("./controllers/usersController");
 const coursesController = require("./controllers/coursesController");
 const Subscriber = require("./models/subscriber");
-const methodOverride = require("method-override");
+const methodOverride = require("method-override"); // Import method-override to handle PUT and DELETE from forms
 
 mongoose.Promise = global.Promise;
 
@@ -30,6 +30,7 @@ db.once("open", () => {
 app.set("port", process.env.PORT || 3000);
 app.set("view engine", "ejs");
 
+// -------------------- MIDDLEWARE -------------------- //
 router.use(express.static("public"));
 router.use(layouts);
 router.use(
@@ -38,7 +39,7 @@ router.use(
   })
 );
 router.use(express.json());
-router.use(methodOverride("_method", {
+router.use(methodOverride("_method", { // Enable PUT/DELETE via query parameter _method
   methods: ["POST", "GET"]
 }));
 
@@ -47,16 +48,16 @@ router.use(homeController.logRequestPaths);
 router.get("/", homeController.index);
 router.get("/contact", homeController.getSubscriptionPage);
 
-//user routes
+// -------------------- USER ROUTES -------------------- //
 router.get("/users", usersController.index, usersController.indexView);
 router.get("/users/new", usersController.new);
 router.post("/users/create", usersController.create, usersController.redirectView);
 router.get("/users/:id", usersController.show, usersController.showView);
-router.get("/users/:id/edit", usersController.edit);
-router.put("/users/:id/update", usersController.update, usersController.redirectView);
-router.delete("/users/:id/delete", usersController.delete, usersController.redirectView);
+router.get("/users/:id/edit", usersController.edit); // Render edit form for user
+router.put("/users/:id/update", usersController.update, usersController.redirectView); // Update user data
+router.delete("/users/:id/delete", usersController.delete, usersController.redirectView); // Delete user
 
-//subscriber routes
+// -------------------- SUBSCRIBER ROUTES -------------------- //
 router.get("/subscribers", subscribersController.index, subscribersController.indexView);
 router.get("/subscribers/new", subscribersController.new);
 router.post(
@@ -65,7 +66,7 @@ router.post(
   subscribersController.redirectView
 );
 router.get("/subscribers/:id", subscribersController.show, subscribersController.showView);
-router.get("/subscribers/:id/edit", subscribersController.edit);
+router.get("/subscribers/:id/edit", subscribersController.edit); // Render edit form for subscriber
 router.put(
   "/subscribers/:id/update",
   subscribersController.update,
@@ -77,24 +78,25 @@ router.delete(
   subscribersController.redirectView
 );
 
-//course routes
+// -------------------- COURSE ROUTES -------------------- //
 router.get("/courses", coursesController.index, coursesController.indexView);
 router.get("/courses/new", coursesController.new);
 router.post("/courses/create", coursesController.create, coursesController.redirectView);
 router.get("/courses/:id", coursesController.show, coursesController.showView);
-router.get("/courses/:id/edit", coursesController.edit);
-router.put("/courses/:id/update", coursesController.update, coursesController.redirectView);
-router.delete("/courses/:id/delete", coursesController.delete, coursesController.redirectView);
+router.get("/courses/:id/edit", coursesController.edit); // Render edit form for course
+router.put("/courses/:id/update", coursesController.update, coursesController.redirectView); // Update course
+router.delete("/courses/:id/delete", coursesController.delete, coursesController.redirectView); // Delete course
 
-router.post("/subscribe", subscribersController.saveSubscriber);
+router.post("/subscribe", subscribersController.saveSubscriber); // Handle subscription form
 
-//error routes
-router.use(errorController.logErrors);
-router.use(errorController.respondNoResourceFound);
-router.use(errorController.respondInternalError);
+// -------------------- ERROR ROUTES -------------------- //
+router.use(errorController.logErrors); // Log server errors
+router.use(errorController.respondNoResourceFound); // Handle 404
+router.use(errorController.respondInternalError); // Handle 500
 
-app.use("/", router);
+app.use("/", router); // Mount the router at root path
 
+// -------------------- START SERVER -------------------- //
 app.listen(app.get("port"), () => {
   console.log(`Server running at http://localhost:${app.get("port")}`);
 });

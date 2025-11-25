@@ -4,9 +4,9 @@ const User = require("../models/user");
 
 module.exports = {
   index: (req, res, next) => {
-    User.find()
+    User.find() // Fetch all users
       .then(users => {
-        res.locals.users = users;
+        res.locals.users = users; // Store users in res.locals for later middleware/view
         next();
       })
       .catch(error => {
@@ -14,12 +14,15 @@ module.exports = {
         next(error);
       });
   },
+
   indexView: (req, res) => {
-    res.render("users/index");
+    res.render("users/index"); // Render page listing all users
   },
+
   new: (req, res) => {
-    res.render("users/new");
+    res.render("users/new"); // Render form to create a new user
   },
+
   create: (req, res, next) => {
     let userParams = {
       name: {
@@ -30,10 +33,11 @@ module.exports = {
       password: req.body.password,
       zipCode: req.body.zipCode
     };
-    User.create(userParams)
+
+    User.create(userParams) // Save new user
       .then(user => {
-        res.locals.redirect = "/users";
-        res.locals.user = user;
+        res.locals.redirect = "/users"; // Set redirect path after creation
+        res.locals.user = user; // Store created user in res.locals
         next();
       })
       .catch(error => {
@@ -41,16 +45,18 @@ module.exports = {
         next(error);
       });
   },
+
   redirectView: (req, res, next) => {
-    let redirectPath = res.locals.redirect;
-    if (redirectPath) res.redirect(redirectPath);
-    else next();
+    let redirectPath = res.locals.redirect; // Check for redirect path
+    if (redirectPath) res.redirect(redirectPath); // Redirect if path exists
+    else next(); // Otherwise, continue
   },
+
   show: (req, res, next) => {
-    let userId = req.params.id;
-    User.findById(userId)
+    let userId = req.params.id; // Get user ID from URL
+    User.findById(userId) // Fetch single user by ID
       .then(user => {
-        res.locals.user = user;
+        res.locals.user = user; // Store user for next middleware/view
         next();
       })
       .catch(error => {
@@ -58,22 +64,25 @@ module.exports = {
         next(error);
       });
   },
+
   showView: (req, res) => {
-    res.render("users/show");
+    res.render("users/show"); // Render page for a single user's details
   },
+
+  // -------------------- EDIT USER -------------------- //
   edit: (req, res, next) => {
-    let userId = req.params.id;
-    User.findById(userId)
+    let userId = req.params.id; // Get user ID from URL
+    User.findById(userId) // Fetch user to edit
       .then(user => {
-        res.render("users/edit", {
-          user: user
-        });
+        res.render("users/edit", { user: user }); // Render edit form with user data
       })
       .catch(error => {
         console.log(`Error fetching user by ID: ${error.message}`);
         next(error);
       });
   },
+
+  // -------------------- UPDATE USER -------------------- //
   update: (req, res, next) => {
     let userId = req.params.id,
       userParams = {
@@ -85,12 +94,11 @@ module.exports = {
         password: req.body.password,
         zipCode: req.body.zipCode
       };
-    User.findByIdAndUpdate(userId, {
-      $set: userParams
-    })
+
+    User.findByIdAndUpdate(userId, { $set: userParams }) // Update user in DB
       .then(user => {
-        res.locals.redirect = `/users/${userId}`;
-        res.locals.user = user;
+        res.locals.redirect = `/users/${userId}`; // Redirect to the updated user's page
+        res.locals.user = user; // Store updated user
         next();
       })
       .catch(error => {
@@ -98,11 +106,13 @@ module.exports = {
         next(error);
       });
   },
+
+  // -------------------- DELETE USER -------------------- //
   delete: (req, res, next) => {
-    let userId = req.params.id;
-    User.findByIdAndRemove(userId)
+    let userId = req.params.id; // Get user ID from URL
+    User.findByIdAndRemove(userId) // Delete user from DB
       .then(() => {
-        res.locals.redirect = "/users";
+        res.locals.redirect = "/users"; // Redirect to users list after deletion
         next();
       })
       .catch(error => {

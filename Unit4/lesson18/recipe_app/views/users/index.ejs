@@ -1,25 +1,30 @@
 <h2>Users Table</h2>
+
 <table class="table">
   <thead>
     <tr>
+      <!-- Column headers -->
       <th>Name</th>
       <th>Email</th>
       <th>Zip Code</th>
     </tr>
   </thead>
+
   <tbody>
-    <% users.forEach(user => { %>
-    <tr>
-      <td>
-        <%= user.fullName %>
-      </td>
-      <td>
-        <%= user.email %>
-      </td>
-      <td>
-        <%= user.zipCode %>
-      </td>
-    </tr>
+    <% 
+      // Loop through the list of users passed to this view
+      users.forEach(user => { 
+    %>
+      <tr>
+        <!-- Display the virtual full name (first + last) -->
+        <td><%= user.fullName %></td>
+
+        <!-- Display user email -->
+        <td><%= user.email %></td>
+
+        <!-- Display user zip code -->
+        <td><%= user.zipCode %></td>
+      </tr>
     <% }); %>
   </tbody>
 </table>

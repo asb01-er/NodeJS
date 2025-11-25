@@ -1,37 +1,39 @@
 <h1 class="center">Subscriber Data for
-  <%= subscriber.name %>
+  <%= subscriber.name %> <!-- Display the subscriber's name dynamically -->
 </h1>
 
 <table class="table">
   <tr>
     <th>Name</th>
     <td>
-      <%= subscriber.name %>
+      <%= subscriber.name %> <!-- Show subscriber's name -->
     </td>
   </tr>
   <tr>
     <th>Email</th>
     <td>
-      <%= subscriber.email%>
+      <%= subscriber.email %> <!-- Show subscriber's email -->
     </td>
   </tr>
   <tr>
     <th>Zip Code</th>
     <td>
-      <%= subscriber.zipCode%>
+      <%= subscriber.zipCode %> <!-- Show subscriber's zip code -->
     </td>
   </tr>
 </table>
 
-
 <div>
-  <a class="button" href="/subscribers">View all subscribers</a>
+  <a class="button" href="/subscribers">View all subscribers</a> <!-- Link to subscriber index -->
 </div>
 <div>
   <a class="button" href="<%=`/subscribers/${subscriber._id}/edit`%>">
-    Edit Subscriber Details
+    Edit Subscriber Details <!-- Link to edit page for this subscriber -->
   </a>
 </div>
 <div>
-  <a class="button" href="<%= `/subscribers/${subscriber._id}/delete?_method=DELETE` %>" onclick="return confirm('Are you sure you want to delete this record?')">Delete</a>
+  <a class="button" href="<%= `/subscribers/${subscriber._id}/delete?_method=DELETE` %>" 
+     onclick="return confirm('Are you sure you want to delete this record?')">
+     Delete <!-- Link triggers DELETE request via method-override with confirmation prompt -->
+  </a>
 </div>

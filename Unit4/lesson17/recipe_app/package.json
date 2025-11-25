@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node main.js"
   },
-  "author": "Jada Mathele",
+  "author": "Ernest Ekelem",
   "license": "ISC",
   "dependencies": {
     "ejs": "^2.6.1",
