@@ -8,7 +8,7 @@ const flash = require('connect-flash');
 const fileUpload = require('express-fileupload')
 // ==================== CHAPTER05 =======================
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/my_database');
+mongoose.connect('mongodb+srv://ernest01:iK8BNGqRTCgGFO5l@cluster0.xajmlwb.mongodb.net/?appName=Cluster0/my_database', { useNewUrlParser: true });
 // ======================================================s
 // Controllers
 const newPostController = require('./controllers/newPost')
@@ -86,9 +86,13 @@ app.get('/auth/logout', logoutController);
 app.use((req, res) => res.render('notfound'));
 
 
-app.listen(4000, () => {
-  console.log("App listening on port 4000");
-});
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 4000;
+}
+app.listen(port, () => {
+  console.log('App listening...')
+})
 
 
 

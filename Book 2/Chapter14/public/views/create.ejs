@@ -5,8 +5,9 @@
   <body>
     <!-- Navigation-->
     <%- include('layouts/navbar'); -%>
+
       <!-- Page Header-->
-      <header class="masthead" style="background-image: url('assets/img/contact-bg.jpg')">
+      <header class="masthead" style="background-image: url('/assets/img/contact-bg.jpg')">
         <div class="container position-relative px-4 px-lg-5">
           <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
@@ -18,50 +19,62 @@
           </div>
         </div>
       </header>
+
       <!-- Main Content-->
       <main class="mb-4">
         <div class="container px-4 px-lg-5">
           <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
               <div class="my-5">
-                <!-- * * * * * * * * * * * * * * *-->
-                <!-- * * SB Forms Contact Form * *-->
-                <!-- * * * * * * * * * * * * * * *-->
-                <!-- This form is pre-integrated with SB Forms.-->
-                <!-- To make this form functional, sign up at-->
-                <!-- https://startbootstrap.com/solution/contact-forms-->
-                <!-- to get an API token!-->
-                <form id="contactForm" data-sb-form-api-token="API_TOKEN" action="/posts/store" method="POST"
-                  enctype="multipart/form-data">
-                  <div class="form-floating">
-                    <input class="form-control" id="title" type="text" placeholder="Title..."
-                      data-sb-validations="required" name="title" />
+                <form id="contactForm" action="/posts/store" method="POST" enctype="multipart/form-data">
+                  <div class="form-floating mb-3">
+                    <input class="form-control" id="title" type="text" placeholder="Title..." name="title" required />
                     <label for="title">Title</label>
                   </div>
-                  <div class="form-floating">
-                    <textarea rows="5" class="form-control" id="body" type="text" placeholder="Body..."
-                      name="body"></textarea>
-
-                    <label for="description">Description</label>
+                  <div class="form-floating mb-3">
+                    <textarea rows="5" class="form-control" id="body" placeholder="Body..." name="body"></textarea>
+                    <script>
+                      $('#body').summernote({
+                        placeholder: 'Write your post here...',
+                        tabsize: 2,
+                        height: 200
+                      });
+                    </script>
+                    <label for="body">Body</label>
                   </div>
-                  <div class="control-group">
-                    <div class="form-group floating-label-form-group controls">
-                      <label>Image</label><input type="file" class="form-control" id="image" name="image">
-                    </div>
+                  <div class="form-group mb-3">
+                    <label for="image">Upload Image (optional)</label>
+                    <input type="file" class="form-control" id="image" name="image">
                   </div>
-                  <br />
                   <div class="form-group">
-                    <button type="submit" class="btn btn-primary" id="sendMessageButton">Send</button>
+                    <button type="submit" class="btn btn-primary">Publish</button>
                   </div>
                 </form>
+
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
+
       <!-- Footer-->
-      <%- include('layouts/footer'); -%> <%- include('layouts/scripts'); -%>
-          <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-          <!-- * *                               SB Forms JS                               * *-->
-          <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
-          <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-          <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+      <%- include('layouts/footer'); -%>
+
+        <!-- Scripts -->
+        <%- include('layouts/scripts'); -%>
+
+          <!-- Summernote Initialization -->
+          <script>
+            $(document).ready(function () {
+              if ($('#body').length) {
+                $('#body').summernote({
+                  placeholder: 'Write your post here...',
+                  tabsize: 2,
+                  height: 200
+                });
+              }
+            });
+          </script>
   </body>
 
 </html>
