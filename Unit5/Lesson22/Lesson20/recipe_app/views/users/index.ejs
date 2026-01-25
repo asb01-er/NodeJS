@@ -1,3 +1,15 @@
+<% if (flashMessages.success && flashMessages.success.length > 0) { %>
+  <% flashMessages.success.forEach(msg => { %>
+    <div class="alert alert-success"><%= msg %></div>
+  <% }) %>
+<% } %>
+
+<% if (flashMessages.error && flashMessages.error.length > 0) { %>
+  <% flashMessages.error.forEach(msg => { %>
+    <div class="alert alert-danger"><%= msg %></div>
+  <% }) %>
+<% } %>
+
 <h2>Users Table</h2>
 <table class="table">
   <thead>

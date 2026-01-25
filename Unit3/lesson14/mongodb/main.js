@@ -47,7 +47,7 @@ subscriber1
 
 // Option 2: Create and save directly using `create()`
 Subscriber.create({
-  name: "Ernest Ekelem",
+  name: "Edward Ekelem",
   email: "jon@jonwexler.com"
 })
   .then(savedDocument => {

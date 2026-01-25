@@ -2,11 +2,25 @@
 
 const User = require("../models/user");
 
+// Helper function to get user parameters from request
+const getUserParams = (body) => {
+  return {
+    name: {
+      first: body.first,
+      last: body.last
+    },
+    email: body.email,
+    password: body.password,
+    zipCode: body.zipCode
+  };
+};
+
 module.exports = {
+  // -------------------- INDEX -------------------- //
   index: (req, res, next) => {
-    User.find() // Fetch all users
+    User.find()
       .then(users => {
-        res.locals.users = users; // Store users in res.locals for later middleware/view
+        res.locals.users = users;
         next();
       })
       .catch(error => {
@@ -16,28 +30,21 @@ module.exports = {
   },
 
   indexView: (req, res) => {
-    res.render("users/index"); // Render page listing all users
+    res.render("users/index");
   },
 
+  // -------------------- NEW -------------------- //
   new: (req, res) => {
-    res.render("users/new"); // Render form to create a new user
+    res.render("users/new");
   },
 
+  // -------------------- CREATE -------------------- //
   create: (req, res, next) => {
-    let userParams = {
-      name: {
-        first: req.body.first,
-        last: req.body.last
-      },
-      email: req.body.email,
-      password: req.body.password,
-      zipCode: req.body.zipCode
-    };
-
-    User.create(userParams) // Save new user
+    let userParams = getUserParams(req.body);
+    User.create(userParams)
       .then(user => {
-        res.locals.redirect = "/users"; // Set redirect path after creation
-        res.locals.user = user; // Store created user in res.locals
+        res.locals.redirect = "/users";
+        res.locals.user = user;
         next();
       })
       .catch(error => {
@@ -47,16 +54,16 @@ module.exports = {
   },
 
   redirectView: (req, res, next) => {
-    let redirectPath = res.locals.redirect; // Check for redirect path
-    if (redirectPath) res.redirect(redirectPath); // Redirect if path exists
-    else next(); // Otherwise, continue
+    if (res.locals.redirect) res.redirect(res.locals.redirect);
+    else next();
   },
 
+  // -------------------- SHOW -------------------- //
   show: (req, res, next) => {
-    let userId = req.params.id; // Get user ID from URL
-    User.findById(userId) // Fetch single user by ID
+    let userId = req.params.id;
+    User.findById(userId)
       .then(user => {
-        res.locals.user = user; // Store user for next middleware/view
+        res.locals.user = user;
         next();
       })
       .catch(error => {
@@ -66,15 +73,15 @@ module.exports = {
   },
 
   showView: (req, res) => {
-    res.render("users/show"); // Render page for a single user's details
+    res.render("users/show");
   },
 
-  // -------------------- EDIT USER -------------------- //
+  // -------------------- EDIT -------------------- //
   edit: (req, res, next) => {
-    let userId = req.params.id; // Get user ID from URL
-    User.findById(userId) // Fetch user to edit
+    let userId = req.params.id;
+    User.findById(userId)
       .then(user => {
-        res.render("users/edit", { user: user }); // Render edit form with user data
+        res.render("users/edit", { user: user });
       })
       .catch(error => {
         console.log(`Error fetching user by ID: ${error.message}`);
@@ -82,23 +89,14 @@ module.exports = {
       });
   },
 
-  // -------------------- UPDATE USER -------------------- //
+  // -------------------- UPDATE -------------------- //
   update: (req, res, next) => {
-    let userId = req.params.id,
-      userParams = {
-        name: {
-          first: req.body.first,
-          last: req.body.last
-        },
-        email: req.body.email,
-        password: req.body.password,
-        zipCode: req.body.zipCode
-      };
-
-    User.findByIdAndUpdate(userId, { $set: userParams }) // Update user in DB
+    let userId = req.params.id;
+    let userParams = getUserParams(req.body);
+    User.findByIdAndUpdate(userId, { $set: userParams })
       .then(user => {
-        res.locals.redirect = `/users/${userId}`; // Redirect to the updated user's page
-        res.locals.user = user; // Store updated user
+        res.locals.redirect = `/users/${userId}`;
+        res.locals.user = user;
         next();
       })
       .catch(error => {
@@ -107,12 +105,12 @@ module.exports = {
       });
   },
 
-  // -------------------- DELETE USER -------------------- //
+  // -------------------- DELETE -------------------- //
   delete: (req, res, next) => {
-    let userId = req.params.id; // Get user ID from URL
-    User.findByIdAndRemove(userId) // Delete user from DB
+    let userId = req.params.id;
+    User.findByIdAndRemove(userId)
       .then(() => {
-        res.locals.redirect = "/users"; // Redirect to users list after deletion
+        res.locals.redirect = "/users";
         next();
       })
       .catch(error => {
